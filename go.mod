@@ -1,4 +1,4 @@
-module github.com/Unfield/Cascade
+module github.com/Unfield/cascade
 
 go 1.24.4
 
