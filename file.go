@@ -1,25 +1,32 @@
 package cascade
 
 import (
+	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/BurntSushi/toml"
-	"gopkg.in/yaml.v3"
+	Drivers "github.com/Unfield/cascade/drivers"
 )
 
-func loadFile(path string, cfg any) error {
-	data, err := os.ReadFile(path)
+func (l *Loader) loadFile(cfg interface{}) error {
+	if l.file == "" {
+		return nil
+	}
+
+	data, err := os.ReadFile(l.file)
 	if err != nil {
 		return err
 	}
 
-	switch filepath.Ext(path) {
-	case ".yaml", ".yml":
-		return yaml.Unmarshal(data, cfg)
-	case ".toml":
-		return toml.Unmarshal(data, cfg)
-	default:
-		return nil
+	drivers := l.drivers
+	if len(drivers) == 0 {
+		drivers = []FileDriver{Drivers.YAMLDriver{}, Drivers.TOMLDriver{}}
 	}
+
+	for _, d := range drivers {
+		if d.CanHandle(l.file) {
+			return d.Unmarshal(data, cfg)
+		}
+	}
+
+	return fmt.Errorf("no driver found for file: %s", l.file)
 }

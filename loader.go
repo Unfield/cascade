@@ -6,6 +6,7 @@ type Loader struct {
 	file      string
 	envPrefix string
 	withFlags bool
+	drivers   []FileDriver
 }
 
 type Option func(*Loader)
@@ -13,6 +14,12 @@ type Option func(*Loader)
 func WithFile(path string) Option {
 	return func(l *Loader) {
 		l.file = path
+	}
+}
+
+func WithCustomFileDriver(driver FileDriver) Option {
+	return func(l *Loader) {
+		l.drivers = append(l.drivers, driver)
 	}
 }
 
@@ -38,7 +45,7 @@ func NewLoader(opts ...Option) *Loader {
 
 func (l *Loader) Load(cfg any) error {
 	if l.file != "" {
-		if err := loadFile(l.file, cfg); err != nil {
+		if err := l.loadFile(l.file); err != nil {
 			return fmt.Errorf("load file: %w", err)
 		}
 	}
