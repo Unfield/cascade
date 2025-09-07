@@ -45,7 +45,7 @@ func NewLoader(opts ...Option) *Loader {
 
 func (l *Loader) Load(cfg any) error {
 	if l.file != "" {
-		if err := l.loadFile(l.file); err != nil {
+		if err := l.loadFile(cfg); err != nil {
 			return fmt.Errorf("load file: %w", err)
 		}
 	}
