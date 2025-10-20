@@ -5,11 +5,34 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Unfield/cascade)](https://goreportcard.com/report/github.com/Unfield/cascade)
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Unfield/cascade?label=version&color=green)
+![Go Module](https://img.shields.io/badge/module-github.com%2FUnfield%2Fcascade-00ADD8?logo=go)
 
 **Cascade** is a modular configuration loader for Go.
 It merges configuration from multiple sources in a cascading order:
 
 **File < Environment < Command-line flags**
+
+---
+
+## 📦 Installation
+
+To add Cascade to your project, use:
+
+```bash
+go get github.com/Unfield/cascade@latest
+```
+
+Or pin a specific version:
+
+```bash
+go get github.com/Unfield/cascade@v0.2.4
+```
+
+Then import it in your Go code:
+
+```go
+import "github.com/Unfield/cascade"
+```
 
 ---
 
