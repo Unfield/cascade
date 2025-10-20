@@ -1,6 +1,9 @@
 package cascade
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 type Loader struct {
 	file      string
@@ -44,6 +47,8 @@ func NewLoader(opts ...Option) *Loader {
 }
 
 func (l *Loader) Load(cfg any) error {
+	ensureStructFields(cfg)
+
 	if l.file != "" {
 		if err := l.loadFile(cfg); err != nil {
 			return fmt.Errorf("load file: %w", err)
@@ -61,4 +66,20 @@ func (l *Loader) Load(cfg any) error {
 	}
 
 	return nil
+}
+
+func ensureStructFields(cfg any) {
+	rv := reflect.ValueOf(cfg)
+	if rv.Kind() != reflect.Ptr || rv.Elem().Kind() != reflect.Struct {
+		return
+	}
+	v := rv.Elem()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if field.Kind() == reflect.Struct && field.CanSet() && field.IsZero() {
+			field.Set(reflect.New(field.Type()).Elem())
+			ensureStructFields(field.Addr().Interface())
+		}
+	}
 }
