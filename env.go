@@ -8,41 +8,48 @@ import (
 )
 
 func loadEnv(prefix string, cfg any) error {
-	v := reflect.ValueOf(cfg).Elem()
+	rv := reflect.ValueOf(cfg)
+	if rv.Kind() != reflect.Ptr || rv.Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("cfg must be a pointer to a struct")
+	}
+
+	v := rv.Elem()
 	t := v.Type()
 
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		fieldType := t.Field(i)
 
+		envTag := fieldType.Tag.Get("env")
+
 		if field.Kind() == reflect.Struct {
-			loadEnv(prefix, field.Addr().Interface())
+			nestedPrefix := prefix
+			if envTag != "" {
+				nestedPrefix = prefix + "_" + strings.ToUpper(envTag)
+			}
+			if err := loadEnv(nestedPrefix, field.Addr().Interface()); err != nil {
+				return err
+			}
 			continue
 		}
 
-		envTag := fieldType.Tag.Get("env")
 		if envTag == "" {
 			continue
 		}
 
-		envName := prefix + "_" + envTag
-		envName = strings.ToUpper(envName)
-
+		envName := strings.ToUpper(prefix + "_" + envTag)
 		if val, ok := os.LookupEnv(envName); ok {
-			if field.Kind() == reflect.String {
+			switch field.Kind() {
+			case reflect.String:
 				field.SetString(val)
-			}
-			if field.Kind() == reflect.Int {
+			case reflect.Int:
 				var i int
-				fmt.Sscanf(val, "%d", &i)
-				field.SetInt(int64(i))
-			}
-			if field.Kind() == reflect.Bool {
-				if val == "true" || val == "1" {
-					field.SetBool(true)
-				} else {
-					field.SetBool(false)
+				if _, err := fmt.Sscanf(val, "%d", &i); err != nil {
+					return fmt.Errorf("invalid int for %s: %w", envName, err)
 				}
+				field.SetInt(int64(i))
+			case reflect.Bool:
+				field.SetBool(val == "true" || val == "1")
 			}
 		}
 	}

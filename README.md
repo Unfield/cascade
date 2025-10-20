@@ -36,10 +36,10 @@ func main() {
     cfg.Server.Port = 8080 // default
     cfg.Server.Host = "0.0.0.0"
 
-    loader := Cascade.NewLoader(
-        Cascade.WithFile("config.yaml"), // or config.toml
-        Cascade.WithEnvPrefix("APP"),
-        Cascade.WithFlags(),
+    loader := cascade.NewLoader(
+        cascade.WithFile("config.yaml"), // or config.toml
+        cascade.WithEnvPrefix("APP"),
+        cascade.WithFlags(),
     )
 
     if err := loader.Load(&cfg); err != nil {
