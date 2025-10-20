@@ -1,5 +1,11 @@
 # 🌊 Cascade
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/Unfield/cascade.svg)](https://pkg.go.dev/github.com/Unfield/cascade)
+[![Go Version](https://img.shields.io/badge/Go-%3E%3D1.24.4-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Unfield/cascade)](https://goreportcard.com/report/github.com/Unfield/cascade)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Unfield/cascade?label=version&color=green)
+
 **Cascade** is a modular configuration loader for Go.
 It merges configuration from multiple sources in a cascading order:
 
